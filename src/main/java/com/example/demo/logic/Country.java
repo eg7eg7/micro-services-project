@@ -1,6 +1,9 @@
-package com.example.demo;
+package com.example.demo.logic;
+
+import org.springframework.data.annotation.Id;
 
 public class Country {
+	@Id
 	private String countryCode;
 	private String countryName;
 	

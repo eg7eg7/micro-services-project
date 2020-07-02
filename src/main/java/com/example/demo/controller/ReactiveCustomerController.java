@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.logic.CustomerService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,6 +37,7 @@ public class ReactiveCustomerController {
 		/* 
 		 *  Returns Exception 500 if customer already exists
 		 *  
+		 *  
 		 *  Creates a new country code if it does not exist, uses the old country name if already does
 		 * */
 			return customers.createNewCustomer(customer.toEntity()).map(val -> new CustomerBoundary(val));
@@ -48,6 +51,8 @@ public class ReactiveCustomerController {
 		
 		/* 
 		 *  Retrieves a customer by email, a void Mono if does not exist
+		 *  
+		 *  Returns 401 if bad request
 		 * */
 		
 			return customers.getCustomerByMail(email).map(val -> new CustomerBoundary(val));

@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.logic;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

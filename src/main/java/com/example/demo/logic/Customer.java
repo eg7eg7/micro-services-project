@@ -1,10 +1,13 @@
-package com.example.demo;
+package com.example.demo.logic;
+
+import org.springframework.data.annotation.Id;
 
 public class Customer {
+	@Id
 	private String email;
 	private String firstName;
 	private String lastName;
-	private String birthdate; //DD-MM-YYYY
+	private String birthdate; //yyyyMMdd
 	private String countryCode;
 	private String countryName;
 	
