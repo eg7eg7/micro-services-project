@@ -2,48 +2,95 @@ package com.example.demo;
 
 public class Customer {
 	private String email;
-	private Name name;
+	private String firstName;
+	private String lastName;
 	private String birthdate; //DD-MM-YYYY
-	private Country country;
+	private String countryCode;
+	private String countryName;
 	
-	public Customer(String email, Name name, String birthdate, Country country) {
+
+	
+	public Customer(String email, String firstName, String lastName, String birthdate, String countryCode,
+			String countryName) {
 		super();
 		this.email = email;
-		this.name = name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.birthdate = birthdate;
-		this.country = country;
+		this.countryCode = countryCode;
+		this.countryName = countryName;
 	}
+
+
 
 	public String getEmail() {
 		return email;
 	}
 
+
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-	public Name getName() {
-		return name;
+
+
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(Name name) {
-		this.name = name;
+
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
+
+
+
+	public String getLastName() {
+		return lastName;
+	}
+
+
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+
 
 	public String getBirthdate() {
 		return birthdate;
 	}
 
+
+
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
 
-	public Country getCountry() {
-		return country;
+
+
+	public String getCountryCode() {
+		return countryCode;
 	}
 
-	public void setCountry(Country country) {
-		this.country = country;
+
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 	
 	
