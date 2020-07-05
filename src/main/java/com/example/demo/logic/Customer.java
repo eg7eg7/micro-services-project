@@ -1,11 +1,12 @@
 package com.example.demo.logic;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.example.demo.utils.Validator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.demo.utils.Util;
 
 @Document(collection = "CUSTOMERS")
 public class Customer {
@@ -14,11 +15,10 @@ public class Customer {
 	private String email;
 	private String firstName;
 	private String lastName;
-	private String birthdate; //yyyyMMdd
+	private String birthdate; //ddMMyyyy
 	private String countryCode;
 	private String countryName;
 	
-
 	
 	public Customer(String email, String firstName, String lastName, String birthdate, String countryCode,
 			String countryName) {
@@ -39,7 +39,6 @@ public class Customer {
 
 
 	public void setEmail(String email) {
-
 		this.email = email;
 	}
 
@@ -73,7 +72,14 @@ public class Customer {
 		return birthdate;
 	}
 
-
+	public Date getBirthdayDate() {
+		try {
+			return Util.getDate(birthdate, birthdateFormat);
+		}
+		catch(ParseException e) {
+			return new Date();
+		}
+	}
 
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
@@ -105,11 +111,11 @@ public class Customer {
 	
 	
 	public boolean isValid() {
-		if(!Validator.isDateValid(birthdate, birthdateFormat)) {
+		if(!Util.isDateValid(birthdate, birthdateFormat)) {
 			System.err.println("Date invalid " + birthdate);
 			return false;
 		}
-		if(!Validator.isEmailValid(email)) {
+		if(!Util.isEmailValid(email)) {
 			System.err.println("Email invalid " + email);
 			return false;
 		}

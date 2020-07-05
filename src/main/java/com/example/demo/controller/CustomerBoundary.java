@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.logic.Country;
 import com.example.demo.logic.Customer;
-import com.example.demo.utils.Validator;
+import com.example.demo.utils.Util;
 
 public class CustomerBoundary {
 	private String email;

@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validator {
+public class Util {
     
 
     public static boolean isEmailValid(String emailAddress) {
@@ -26,11 +26,22 @@ public class Validator {
     	d.setLenient(false);
     	try {
 			Date s = d.parse(date);
-			System.err.println("Date:" + s);
 		} catch (ParseException e) {
 			System.err.println(e);
 			return false;
 		}
     	return true;
+    }
+    
+    public static Date getDate(String date, String format) throws ParseException {
+    	SimpleDateFormat d = new SimpleDateFormat(format);
+    	d.setLenient(false);
+    	try {
+			Date s = d.parse(date);
+			return s;
+		} catch (ParseException e) {
+			System.err.println(e);
+			throw e;
+		}
     }
 }

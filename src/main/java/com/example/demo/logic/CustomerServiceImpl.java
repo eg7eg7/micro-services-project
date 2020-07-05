@@ -10,7 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ import com.example.demo.db.CountryDao;
 import com.example.demo.db.CustomerDao;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.CustomerAlreadyExistsException;
+import com.example.demo.exception.CustomerNotFoundException;
+import com.example.demo.utils.Util;
+import com.mongodb.reactivestreams.client.internal.Publishers;
 
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
@@ -63,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Mono<Customer> getCustomerByMail(String email) {
-		return customerDB.findByEmail(email);
+		return customerDB.findByEmail(email).switchIfEmpty(Mono.error(new CustomerNotFoundException()));
 	}
 
 	@Override
@@ -82,7 +87,7 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 			catch(NumberFormatException e) {
 				System.err.println(e);
-				throw new BadRequestException("Invalid age request");
+				return Flux.error(new BadRequestException("Invalid age request"));
 			}
 		}
 		
@@ -94,39 +99,18 @@ public class CustomerServiceImpl implements CustomerService {
 		else {
 			f = customerDB.findAll();
 		}
-		
 		if(age != null) {
-			final int mAge = age;
-			f.filter(new Predicate<Customer>() {
-				
-				@Override
-				public boolean test(Customer t) {
-					SimpleDateFormat f = new SimpleDateFormat(Customer.birthdateFormat);
-					Date d = null;
-					try {
-						d = f.parse(t.getBirthdate());
-					} catch (ParseException e) {
-						e.printStackTrace();
-						return false;
-					}
-					Calendar c = Calendar.getInstance();
-					c.add(Calendar.YEAR, -mAge);
-					Date minDate = c.getTime();
-					if(d.before(minDate) || d.compareTo(minDate) == 0) {
-						return true;
-					}
-					return false;
-				}
-			});
-			
+			int mAge = age.intValue();
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.YEAR, -mAge);
+			c.set(Calendar.AM_PM, Calendar.AM);
+			c.set(Calendar.HOUR, 0);
+			c.set(Calendar.MINUTE, 0);
+			Date minDate = c.getTime();
+			f = f.filter(customer -> customer.getBirthdayDate().before(minDate));
 		}
-		f.sort(new Comparator<Customer>() {
-
-			@Override
-			public int compare(Customer o1, Customer o2) {
-				return o1.getEmail().compareTo(o2.getEmail());
-			}
-		});
+		
+		f.collectSortedList((c1, c2) ->c2.getEmail().compareTo(c1.getEmail()));
 		return f;
 	}
 

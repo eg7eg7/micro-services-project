@@ -88,8 +88,8 @@ public class ReactiveCustomerController {
 			return customers.getCustomers(lastName, minAge).map(val -> new CustomerBoundary(val));
 	}
 	
-	@ExceptionHandler
-	public Mono<HttpClientErrorException> handleException(Exception e) {
-		return Mono.error(e);
-	}
+//	@ExceptionHandler
+//	public Mono<HttpClientErrorException> handleException(Exception e) {
+//		return Mono.error(e);
+//	}
 }
