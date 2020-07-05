@@ -107,10 +107,14 @@ public class CustomerServiceImpl implements CustomerService {
 			c.set(Calendar.HOUR, 0);
 			c.set(Calendar.MINUTE, 0);
 			Date minDate = c.getTime();
-			f = f.filter(customer -> customer.getBirthdayDate().before(minDate));
+			f = f.filter(customer -> customer.getBirthdayDate().before(minDate)).sort(new Comparator<Customer>() {
+
+				@Override
+				public int compare(Customer c1, Customer c2) {
+					return c1.getEmail().compareTo(c2.getEmail());
+				}
+			});
 		}
-		
-		f.collectSortedList((c1, c2) ->c2.getEmail().compareTo(c1.getEmail()));
 		return f;
 	}
 
