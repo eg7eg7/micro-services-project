@@ -1,8 +1,14 @@
 package com.example.demo.logic;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.example.demo.utils.Validator;
+
+@Document(collection = "CUSTOMERS")
 public class Customer {
+	public static final String birthdateFormat = "dd-MM-yyyy";
 	@Id
 	private String email;
 	private String firstName;
@@ -25,7 +31,6 @@ public class Customer {
 	}
 
 
-
 	public String getEmail() {
 		return email;
 	}
@@ -33,6 +38,7 @@ public class Customer {
 
 
 	public void setEmail(String email) {
+
 		this.email = email;
 	}
 
@@ -96,5 +102,21 @@ public class Customer {
 		this.countryName = countryName;
 	}
 	
-	
+	@Transient
+	public boolean isValid() {
+		if(!Validator.isDateValid(birthdate, birthdateFormat)) {
+			return false;
+		}
+		if(!Validator.isEmailValid(email)) {
+			return false;
+		}
+		if(countryCode.length() != 2) {
+			return false;
+		}
+		return true;
+	}
+
+
+
+
 }

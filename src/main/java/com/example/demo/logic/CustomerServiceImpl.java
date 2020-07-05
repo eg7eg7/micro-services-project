@@ -5,18 +5,24 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.controller.CustomerBoundary;
 import com.example.demo.db.CountryDao;
 import com.example.demo.db.CustomerDao;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.CustomerAlreadyExistsException;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -33,11 +39,42 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Mono<Customer> createNewCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		// check if mail is valid
-		// check if date is valid
-		//if(customer.getEmail().is)
-		return null;
+		if(!customer.isValid()) {
+			return Mono.error(new BadRequestException("Bad email or birthdate format"));
+		}
+		
+		Mono<Customer> customerFromDB = customerDB.findByEmail(customer.getEmail());
+		
+		Mono<Country> countryFromDB = countryDB.findByCountryCode(customer.getCountryCode());
+		Mono<Customer> c = customerFromDB.zipWith(countryFromDB).doOnSuccess(new Consumer<Tuple2<Customer, Country>>() {
+
+			@Override
+			public void accept(Tuple2<Customer, Country> t) {
+				System.err.println("Tuple" + t + "\n");
+				if(t == null) {
+					System.err.println("Saving...");
+					countryDB.save(new Country(customer.getCountryCode(), customer.getCountryName())).subscribe();
+					customerDB.save(customer).subscribe();
+					return;
+				}
+				Customer cus = t.getT1();
+				Country country = t.getT2();
+				System.err.println("Tuple" + cus + " and " + country);
+				if(cus != null) {
+					throw new CustomerAlreadyExistsException();
+				}
+				if(country == null) {
+					countryDB.save(new Country(customer.getCountryCode(), customer.getCountryName())).subscribe();
+				}
+				else {
+					customer.setCountryName(country.getCountryName());
+				}
+			
+				customerDB.save(customer).subscribe();
+				
+			}
+		}).thenReturn(customer);
+		return c;
 	}
 
 	@Override
@@ -80,7 +117,7 @@ public class CustomerServiceImpl implements CustomerService {
 				
 				@Override
 				public boolean test(Customer t) {
-					SimpleDateFormat f = new SimpleDateFormat(CustomerBoundary.birthdateFormat);
+					SimpleDateFormat f = new SimpleDateFormat(Customer.birthdateFormat);
 					Date d = null;
 					try {
 						d = f.parse(t.getBirthdate());

@@ -2,14 +2,19 @@ package com.example.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
+import com.example.demo.logic.Customer;
 import com.example.demo.logic.CustomerService;
 
 import reactor.core.publisher.Flux;
@@ -18,7 +23,7 @@ import reactor.core.publisher.Mono;
 @RestController
 public class ReactiveCustomerController {
 	private static final String byLastName = "byLastName";
-	private static final String byAgeGreaterThan = "byLastName";
+	private static final String byAgeGreaterThan = "byAgeGreaterThan";
 	
 	private CustomerService customers;
 	
@@ -32,7 +37,7 @@ public class ReactiveCustomerController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-		public Mono<CustomerBoundary> createNewCustomer(@RequestBody CustomerBoundary customer){
+		public Mono<Customer> createNewCustomer(@RequestBody CustomerBoundary customer){
 		
 		/* 
 		 *  Returns Exception 500 if customer already exists
@@ -40,9 +45,10 @@ public class ReactiveCustomerController {
 		 *  
 		 *  Creates a new country code if it does not exist, uses the old country name if already does
 		 * */
-			return customers.createNewCustomer(customer.toEntity()).map(val -> new CustomerBoundary(val));
+			return customers.createNewCustomer(customer.toEntity()).map(val -> val);
 		}
 	
+
 	@RequestMapping(
 			path="/customers/{email}",
 			method = RequestMethod.GET,
@@ -78,5 +84,10 @@ public class ReactiveCustomerController {
 		 * */
 		
 			return customers.getCustomers(lastName, minAge).map(val -> new CustomerBoundary(val));
+	}
+	
+	@ExceptionHandler
+	public Mono<HttpClientErrorException> handleException(Exception e) {
+		return Mono.error(e);
 	}
 }

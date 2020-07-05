@@ -6,11 +6,14 @@ import com.example.demo.logic.Customer;
 import com.example.demo.utils.Validator;
 
 public class CustomerBoundary {
-	public static final String birthdateFormat = "dd-MM-yyyy";
 	private String email;
 	private Name name;
 	private String birthdate; //DD-MM-YYYY
 	private Country country;
+	
+	public CustomerBoundary() {
+		
+	}
 	
 	public CustomerBoundary(String email, Name name, String birthdate, Country country) {
 		super();
@@ -22,9 +25,9 @@ public class CustomerBoundary {
 	
 	public CustomerBoundary(Customer c) {
 		super();
-		setEmail(c.getEmail());
+		email = c.getEmail();
 		name = new Name(c.getFirstName(), c.getLastName());
-		setBirthdate(c.getBirthdate());
+		birthdate = c.getBirthdate();
 		country = new Country(c.getCountryCode(), c.getCountryName());
 	}
 
@@ -33,9 +36,6 @@ public class CustomerBoundary {
 	}
 
 	public void setEmail(String email) {
-		if(!Validator.isEmailValid(email)) {
-			throw new BadRequestException("Invalid email format");
-		}
 		this.email = email;
 	}
 
@@ -52,9 +52,6 @@ public class CustomerBoundary {
 	}
 
 	public void setBirthdate(String birthdate) {
-		if(!Validator.isDateValid(birthdate, birthdateFormat)) {
-			throw new BadRequestException("Invalid date format for birthdate");
-		}
 		this.birthdate = birthdate;
 	}
 

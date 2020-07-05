@@ -3,6 +3,10 @@ package com.example.demo.controller;
 public class Name {
 	private String first;
 	private String last;
+	
+	public Name() {
+		
+	}
 	public Name(String first, String last) {
 		super();
 		this.setFirst(first);
