@@ -23,8 +23,10 @@ public class Validator {
     
     public static boolean isDateValid(String date, String format) {
     	SimpleDateFormat d = new SimpleDateFormat(format);
+    	d.setLenient(false);
     	try {
 			Date s = d.parse(date);
+			System.err.println("Date:" + s);
 		} catch (ParseException e) {
 			System.err.println(e);
 			return false;

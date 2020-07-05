@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.logic.Customer;
 import com.example.demo.logic.CustomerService;
 
@@ -32,12 +33,13 @@ public class ReactiveCustomerController {
 		this.customers = c;
 	}
 	
+	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(
 			path="/customers",
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-		public Mono<Customer> createNewCustomer(@RequestBody CustomerBoundary customer){
+		public Mono<CustomerBoundary> createNewCustomer(@RequestBody CustomerBoundary customer){
 		
 		/* 
 		 *  Returns Exception 500 if customer already exists
@@ -45,7 +47,7 @@ public class ReactiveCustomerController {
 		 *  
 		 *  Creates a new country code if it does not exist, uses the old country name if already does
 		 * */
-			return customers.createNewCustomer(customer.toEntity()).map(val -> val);
+			return customers.createNewCustomer(customer.toEntity()).map(val -> new CustomerBoundary(val));
 		}
 	
 

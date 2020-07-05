@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ import com.example.demo.db.CustomerDao;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.CustomerAlreadyExistsException;
 
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -43,49 +45,31 @@ public class CustomerServiceImpl implements CustomerService {
 			return Mono.error(new BadRequestException("Bad email or birthdate format"));
 		}
 		
-		Mono<Customer> customerFromDB = customerDB.findByEmail(customer.getEmail());
-		
-		Mono<Country> countryFromDB = countryDB.findByCountryCode(customer.getCountryCode());
-		Mono<Customer> c = customerFromDB.zipWith(countryFromDB).doOnSuccess(new Consumer<Tuple2<Customer, Country>>() {
-
-			@Override
-			public void accept(Tuple2<Customer, Country> t) {
-				System.err.println("Tuple" + t + "\n");
-				if(t == null) {
-					System.err.println("Saving...");
-					countryDB.save(new Country(customer.getCountryCode(), customer.getCountryName())).subscribe();
-					customerDB.save(customer).subscribe();
-					return;
-				}
-				Customer cus = t.getT1();
-				Country country = t.getT2();
-				System.err.println("Tuple" + cus + " and " + country);
-				if(cus != null) {
-					throw new CustomerAlreadyExistsException();
-				}
-				if(country == null) {
-					countryDB.save(new Country(customer.getCountryCode(), customer.getCountryName())).subscribe();
-				}
-				else {
-					customer.setCountryName(country.getCountryName());
-				}
-			
-				customerDB.save(customer).subscribe();
-				
+		 return customerDB.findByEmail(customer.getEmail()).defaultIfEmpty(new Customer("empty", "", "", "", "", ""))
+		.flatMap(cu -> {
+			if(!cu.getEmail().equals("empty")) {
+				return Mono.error(new CustomerAlreadyExistsException());
 			}
-		}).thenReturn(customer);
-		return c;
+			Mono<Country> countryFromDB = countryDB.findByCountryCode(customer.getCountryCode())
+					.defaultIfEmpty(new Country(customer.getCountryCode(), customer.getCountryName()));
+			return countryFromDB.flatMap(country -> {
+				customer.setCountryName(country.getCountryName());
+				customerDB.save(customer).subscribe();
+				countryDB.save(country).subscribe();
+				return Mono.just(customer);
+			});
+		});
 	}
 
 	@Override
 	public Mono<Customer> getCustomerByMail(String email) {
-		return customerDB.findById(email);
+		return customerDB.findByEmail(email);
 	}
 
 	@Override
 	public Mono<Void> deleteAll() {
-		countryDB.deleteAll();
-		customerDB.deleteAll();
+		countryDB.deleteAll().subscribe();
+		customerDB.deleteAll().subscribe();
 		return Mono.empty();
 	}
 

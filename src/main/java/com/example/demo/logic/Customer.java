@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.example.demo.utils.Validator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document(collection = "CUSTOMERS")
 public class Customer {
@@ -26,7 +27,7 @@ public class Customer {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.birthdate = birthdate;
-		this.countryCode = countryCode;
+		this.countryCode = countryCode.toUpperCase();
 		this.countryName = countryName;
 	}
 
@@ -102,18 +103,28 @@ public class Customer {
 		this.countryName = countryName;
 	}
 	
-	@Transient
+	
 	public boolean isValid() {
 		if(!Validator.isDateValid(birthdate, birthdateFormat)) {
+			System.err.println("Date invalid " + birthdate);
 			return false;
 		}
 		if(!Validator.isEmailValid(email)) {
+			System.err.println("Email invalid " + email);
 			return false;
 		}
 		if(countryCode.length() != 2) {
+			System.err.println("Country invalid " + countryCode);
 			return false;
 		}
 		return true;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Customer [email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + ", birthdate="
+				+ birthdate + ", countryCode=" + countryCode + ", countryName=" + countryName + "]";
 	}
 
 

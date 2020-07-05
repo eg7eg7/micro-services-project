@@ -30,6 +30,11 @@ public class Country {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+
+	@Override
+	public String toString() {
+		return "Country [countryCode=" + countryCode + ", countryName=" + countryName + "]";
+	}
 	
 	
 }
