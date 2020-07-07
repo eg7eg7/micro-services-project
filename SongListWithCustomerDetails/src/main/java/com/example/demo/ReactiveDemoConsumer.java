@@ -16,30 +16,18 @@ public class ReactiveDemoConsumer implements CommandLineRunner{
 		String url = "http://localhost:5002/lists/withUserDetails";
 		
 		WebClient webClient = WebClient.create(url);
-		System.err.println("consumer initialized and requested GET /demoes");
 		Flux<ListWithCustomer> results = webClient
 			.get()
 			.accept(MediaType.TEXT_EVENT_STREAM)
 			.retrieve()
 			.bodyToFlux(ListWithCustomer.class);
-		
-		results
-//			.subscribe(); // do nothing consumer
-		
-//			.subscribe(demo->
-//				System.err.println("retrieved new data: " + demo)); // handle successful events only
-		
-		.subscribe(demo->
-				System.err.println("retrieved new data: " + demo),
-				
-				error->/*System.err.println("something wrong happened"),*/error.printStackTrace(), // handle errors
-				
-				()->System.err.println("done consuming data from service"),// complete runnable
-			
-				subscription->subscription.request(20) // subscription handling
-				
-				);
-//		
+		System.err.println("SongListWithCustomerDetails Consumer initialized, make sure customer and song lists services and online");
+		results.subscribe(
+				b -> {System.err.println("retrieved new list with customer: " + b);},
+				err-> {System.err.println("Retrieved an error " + err);},
+				() -> {System.err.println("Retrieved all lists");},
+				s -> {s.request(22);});
+	
 	}
 
 }

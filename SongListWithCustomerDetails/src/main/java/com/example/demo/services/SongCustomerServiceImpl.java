@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 @Service
 public class SongCustomerServiceImpl implements SongCustomer {
 
-	private final String getLists = "/lists?orderAttr=ASC&sortAttr=id";
+	private final String getLists = "/lists?orderAttr=ASC&sortAttr=createdTimestamp";
 
 	@Value("${listService.url}")
 	String listServiceUrl;
