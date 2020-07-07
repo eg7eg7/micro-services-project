@@ -6,13 +6,13 @@ import com.example.demo.utils.Util;
 public class CustomerBoundary {
 	private String email;
 	private Name name;
-	private String birthdate; //DD-MM-YYYY
+	private String birthdate; // DD-MM-YYYY
 	private Country country;
-	
+
 	public CustomerBoundary() {
-		
+
 	}
-	
+
 	public CustomerBoundary(String email, Name name, String birthdate, Country country) {
 		super();
 		this.email = email;
@@ -20,7 +20,7 @@ public class CustomerBoundary {
 		this.birthdate = birthdate;
 		this.country = country;
 	}
-	
+
 	public CustomerBoundary(Customer c) {
 		super();
 		email = c.getEmail();
@@ -60,9 +60,10 @@ public class CustomerBoundary {
 	public void setCountry(Country country) {
 		this.country = country;
 	}
-	
+
 	public Customer toEntity() {
-		return new Customer(email, name.getFirst(), name.getLast(), birthdate, country.getCountryCode(), country.getCountryName());
+		return new Customer(email, name.getFirst(), name.getLast(), birthdate, country.getCountryCode(),
+				country.getCountryName());
 	}
-	
+
 }
