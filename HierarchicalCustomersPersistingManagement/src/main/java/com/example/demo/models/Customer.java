@@ -15,10 +15,11 @@ public class Customer {
 	private String email;
 	private String firstName;
 	private String lastName;
-	private String birthdate; // ddMMyyyy
+	private String birthdate; //ddMMyyyy
 	private String countryCode;
 	private String countryName;
-
+	
+	
 	public Customer(String email, String firstName, String lastName, String birthdate, String countryCode,
 			String countryName) {
 		super();
@@ -30,29 +31,42 @@ public class Customer {
 		this.countryName = countryName;
 	}
 
+
 	public String getEmail() {
 		return email;
 	}
+
+
 
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
+
+
 	public String getFirstName() {
 		return firstName;
 	}
+
+
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
+
+
 	public String getLastName() {
 		return lastName;
 	}
 
+
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+
 
 	public String getBirthdate() {
 		return birthdate;
@@ -61,7 +75,8 @@ public class Customer {
 	public Date getBirthdayDate() {
 		try {
 			return Util.getDate(birthdate, birthdateFormat);
-		} catch (ParseException e) {
+		}
+		catch(ParseException e) {
 			return new Date();
 		}
 	}
@@ -70,42 +85,55 @@ public class Customer {
 		this.birthdate = birthdate;
 	}
 
+
+
 	public String getCountryCode() {
 		return countryCode;
 	}
+
+
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
 
+
+
 	public String getCountryName() {
 		return countryName;
 	}
 
+
+
 	public void setCountryName(String countryName) {
 		this.countryName = countryName;
 	}
-
+	
+	
 	public boolean isValid() {
-		if (!Util.isDateValid(birthdate, birthdateFormat)) {
+		if(!Util.isDateValid(birthdate, birthdateFormat)) {
 			System.err.println("Date invalid " + birthdate);
 			return false;
 		}
-		if (!Util.isEmailValid(email)) {
+		if(!Util.isEmailValid(email)) {
 			System.err.println("Email invalid " + email);
 			return false;
 		}
-		if (countryCode.length() != 2) {
+		if(countryCode.length() != 2) {
 			System.err.println("Country invalid " + countryCode);
 			return false;
 		}
 		return true;
 	}
 
+
 	@Override
 	public String toString() {
 		return "Customer [email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + ", birthdate="
 				+ birthdate + ", countryCode=" + countryCode + ", countryName=" + countryName + "]";
 	}
+
+
+
 
 }

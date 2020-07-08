@@ -10,6 +10,5 @@ import reactor.core.publisher.Mono;
 public interface CustomerDao extends ReactiveMongoRepository<Customer, String> {
 
 	Mono<Customer> findByEmail(String email);
-
 	Flux<Customer> findByLastName(String lastName);
 }
