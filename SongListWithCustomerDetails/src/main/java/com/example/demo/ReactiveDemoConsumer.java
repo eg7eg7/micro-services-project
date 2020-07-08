@@ -37,7 +37,10 @@ public class ReactiveDemoConsumer implements CommandLineRunner {
 		 * 
 		 * */
 		
-//		Flux<ListWithCustomer> results = WebClient.create(url).get().accept(MediaType.TEXT_EVENT_STREAM).retrieve()
+//		Flux<ListWithCustomer> results = WebClient.create(url)
+//				.get()
+//				.accept(MediaType.TEXT_EVENT_STREAM)
+//				.retrieve()
 //				.bodyToFlux(ListWithCustomer.class);
 //
 //		Flux.range(0, 50).subscribe(new Subscriber<Integer>() {
